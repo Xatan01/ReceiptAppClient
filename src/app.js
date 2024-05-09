@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // Import `Routes` and `Navigate` from react-router-dom
 import LoginPage from './Pages/loginPage';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Apps() {
   return (
