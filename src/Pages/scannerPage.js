@@ -7,6 +7,7 @@ export default function ScannerPage() {
     const [stream, setStream] = useState(null); // State to store the camera stream
     const [isCameraOpen, setIsCameraOpen] = useState(false); // State to track camera open/close
     const [isImageCaptured, setIsImageCaptured] = useState(false); // State to track if an image is captured
+    const [isSubmit, setIsSubmit] = useState(true); // State to track if upload is displayed
 
     const videoRef = useRef(null); // Reference to the video element
 
@@ -41,6 +42,7 @@ export default function ScannerPage() {
             // Set the camera stream as the source for the video element
             videoRef.current.srcObject = mediaStream;
             setIsCameraOpen(true); // Set camera open state
+            setIsSubmit(false);
         } catch (error) {
             console.error("Error accessing camera:", error);
         }
@@ -51,6 +53,7 @@ export default function ScannerPage() {
             stream.getTracks().forEach((track) => track.stop()); // Stop the camera stream
             setStream(null); // Clear the camera stream from state
             setIsCameraOpen(false); // Set camera close state
+            setIsSubmit(true);
         }
     };
 
@@ -101,18 +104,23 @@ export default function ScannerPage() {
                     <h3 className="Scanner-form-title">Scan Your Receipt</h3>
                     {!isImageCaptured && (
                         <div>
-                            <div className="form-group mt-3">
-                                <label htmlFor="file-upload">Upload a Photo or PDF</label>
-                                <input type="file" accept="image/*,application/pdf" className="form-control mt-1" id="file-upload" onChange={handleFileChange} />
-                            </div>
-                            <div className="d-grid gap-2 mt-3">
-                                <button type="button" className="btn btn-primary" onClick={handleScan} disabled={!file || isScanning}>
-                                    {isScanning ? "Scanning..." : "Scan"}
-                                </button>
-                            </div>
+                        {/* Conditionally display the upload section with ternary operator */}
+                        {!isCameraOpen && (
+                          <div className="form-group mt-3">
+                            <label htmlFor="file-upload">Upload a Photo or PDF</label>
+                            <input type="file" accept="image/*,application/pdf" className="form-control mt-1" id="file-upload" onChange={handleFileChange} />
+                          </div>
+                        )}
+          
+                        <div className="d-grid gap-2 mt-3">
+                          {/* Button remains the same */}
+                          <button type="button" className="btn btn-primary" onClick={isCameraOpen ? captureImage : handleScan} disabled={!file || isScanning}>
+                            {isScanning ? "Scanning..." : (isCameraOpen ? "Capture Image" : "Scan")}
+                          </button>
+                        </div>
                             {stream ? (
                                 <div>
-                                    {/* Video element to display the camera stream */}
+                                    {/* Video ele\ment to display the camera stream */}
                                     <video ref={videoRef} id="camera-preview" autoPlay playsInline></video>
                                     <div className="d-grid gap-2 mt-3">
                                         <button type="button" className="btn btn-danger" onClick={closeCamera}>
@@ -130,7 +138,7 @@ export default function ScannerPage() {
                                     </button>
                                 </div>
                             )}
-                        </div>
+                      </div>
                     )}
                     {isImageCaptured && (
                         <div>
