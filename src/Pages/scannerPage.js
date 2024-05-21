@@ -7,29 +7,42 @@ export default function ScannerPage() {
   const [stream, setStream] = useState(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isImageCaptured, setIsImageCaptured] = useState(false);
+  const [scanResult, setScanResult] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
   const videoRef = useRef(null);
 
-  const handleFileChange = (e) => setFile(e.target.files[0]);
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile && (selectedFile.type.startsWith("image/") || selectedFile.type === "application/pdf")) {
+      setFile(selectedFile);
+    } else {
+      setErrorMessage("Please upload a valid image or PDF file.");
+    }
+  };
 
   const handleScan = async () => {
     setIsScanning(true);
+    setErrorMessage(null);
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const response = await fetch("http://localhost:3001/api/scan", {
+      const response = await fetch("http://localhost:5000/api/scan", {
         method: "POST",
         body: formData,
       });
       const result = await response.json();
-      console.log("Scan result:", result); 
+      setScanResult(result.fields);
+      console.log("Scan result:", result);
     } catch (error) {
       console.error("Error scanning file:", error);
+      setErrorMessage("Failed to scan file. Please try again.");
     } finally {
       setIsScanning(false);
     }
   };
 
   const openCamera = async () => {
+    setErrorMessage(null);
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
       setStream(mediaStream);
@@ -37,6 +50,7 @@ export default function ScannerPage() {
       setIsCameraOpen(true);
     } catch (error) {
       console.error("Error accessing camera:", error);
+      setErrorMessage("Error accessing camera. Please ensure camera permissions are enabled.");
     }
   };
 
@@ -66,83 +80,101 @@ export default function ScannerPage() {
   };
 
   const confirmImage = () => {
-    console.log("Submitting captured image:", file);
-    setFile(null);
+    handleScan(); // Call handleScan to upload the captured image
     setIsImageCaptured(false);
   };
 
-    // Function to convert data URL to file
-    const dataURLtoFile = (dataURL, filename) => {
-        const arr = dataURL.split(",");
-        const mime = arr[0].match(/:(.*?);/)[1];
-        const bstr = atob(arr[1]);
-        let n = bstr.length;
-        const u8arr = new Uint8Array(n);
-        while (n--) {
-            u8arr[n] = bstr.charCodeAt(n);
-        }
-        return new File([u8arr], filename, { type: mime });
-    };
+  const dataURLtoFile = (dataURL, filename) => {
+    const arr = dataURL.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  };
 
-    return (
-        <div className={`Scanner-form-container ${isCameraOpen ? 'camera-open' : ''}`}>
-            <form className="Scanner-form">
-                <div className="Scanner-form-content">
-                    <h3 className="Scanner-form-title">Scan Your Receipt</h3>
-                    {!isImageCaptured && (
-                        <div>
-                            {!isCameraOpen && (
-                                <div className="form-group mt-3">
-                                    <label htmlFor="file-upload">Upload a Photo or PDF</label>
-                                    <input type="file" accept="image/*,application/pdf" className="form-control mt-1" id="file-upload" onChange={handleFileChange} />
-                                </div>
-                            )}
-
-                            {!isCameraOpen && (
-                                <div className="d-grid gap-2 mt-3">
-                                    <button type="button" className="btn btn-primary" onClick={handleScan} disabled={!file || isScanning}>
-                                        {isScanning ? "Scanning..." : "Scan"}
-                                    </button>
-                                </div>
-                            )}
-
-                            {stream ? (
-                                <div>
-                                    {/* Video element to display the camera stream */}
-                                    <video ref={videoRef} id="camera-preview" autoPlay playsInline></video>
-                                    <div className="d-grid gap-2 mt-3">
-                                        <button type="button" className="btn btn-danger" onClick={closeCamera}>
-                                            Close Camera
-                                        </button>
-                                        <button type="button" className="btn btn-primary" onClick={captureImage}>
-                                            Capture Image
-                                        </button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="d-grid gap-2 mt-3">
-                                    <button type="button" className="btn btn-secondary" onClick={openCamera}>
-                                        Use Camera
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                    {isImageCaptured && (
-                        <div>
-                            <img src={URL.createObjectURL(file)} alt="Captured" />
-                            <div className="d-grid gap-2 mt-3">
-                                <button type="button" className="btn btn-danger" onClick={retakeImage}>
-                                    Retake
-                                </button>
-                                <button type="button" className="btn btn-primary" onClick={confirmImage}>
-                                    Confirm
-                                </button>
-                            </div>
-                        </div>
-                    )}
+  return (
+    <div className={`Scanner-form-container ${isCameraOpen ? 'camera-open' : ''}`}>
+      <form className="Scanner-form">
+        <div className="Scanner-form-content">
+          <h3 className="Scanner-form-title">Scan Your Receipt</h3>
+          {errorMessage && <div className="error-message">{errorMessage}</div>}
+          {!isImageCaptured && (
+            <div>
+              {!isCameraOpen && (
+                <div className="form-group mt-3">
+                  <label htmlFor="file-upload">Upload a Photo or PDF</label>
+                  <input
+                    type="file"
+                    accept="image/*,application/pdf"
+                    className="form-control mt-1"
+                    id="file-upload"
+                    onChange={handleFileChange}
+                  />
                 </div>
-            </form>
+              )}
+
+              {!isCameraOpen && (
+                <div className="d-grid gap-2 mt-3">
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleScan}
+                    disabled={!file || isScanning}
+                  >
+                    {isScanning ? "Scanning..." : "Scan"}
+                  </button>
+                </div>
+              )}
+
+              {stream ? (
+                <div>
+                  {/* Video element to display the camera stream */}
+                  <video ref={videoRef} id="camera-preview" autoPlay playsInline></video>
+                  <div className="d-grid gap-2 mt-3">
+                    <button type="button" className="btn btn-danger" onClick={closeCamera}>
+                      Close Camera
+                    </button>
+                    <button type="button" className="btn btn-primary" onClick={captureImage}>
+                      Capture Image
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="d-grid gap-2 mt-3">
+                  <button type="button" className="btn btn-secondary" onClick={openCamera}>
+                    Use Camera
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+          {isImageCaptured && (
+            <div>
+              <img src={URL.createObjectURL(file)} alt="Captured" />
+              <div className="d-grid gap-2 mt-3">
+                <button type="button" className="btn btn-danger" onClick={retakeImage}>
+                  Retake
+                </button>
+                <button type="button" className="btn btn-primary" onClick={confirmImage}>
+                  Confirm
+                </button>
+              </div>
+            </div>
+          )}
+          {scanResult && (
+            <div className="scan-result">
+              <h4>Scan Result:</h4>
+              <p><strong>Bill Date:</strong> {scanResult.billDate}</p>
+              <p><strong>Invoice No:</strong> {scanResult.invoiceNo}</p>
+              <p><strong>Total Amount:</strong> {scanResult.totalAmount}</p>
+            </div>
+          )}
         </div>
-    );
+      </form>
+    </div>
+  );
 }
