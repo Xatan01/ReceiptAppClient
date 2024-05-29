@@ -3,18 +3,16 @@
   import LoginPage from './Pages/loginPage';
   import ScannerPage from './Pages/scannerPage';
   import 'bootstrap/dist/css/bootstrap.min.css';
+import HistoryPage from './Pages/historyPage';
   
   function App() {
-    //const isAuthenticated = () => {
-    // Check if the user is authenticated (e.g., by checking if the session token or JWT exists)
-    //return localStorage.getItem('token') != null;
     return (
       <div className="App">
         <Router>
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
             <Route path ="/scanner" element={<ScannerPage />} />
-            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path ="/history" element={<HistoryPage/>} />
+            <Route path="/" element={<Navigate to="/scanner" />} />
           </Routes>
         </Router>
       </div>

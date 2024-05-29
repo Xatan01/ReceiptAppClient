@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import "./scannerPage.css";
+import {Link} from "react-router-dom";
 
 export default function ScannerPage() {
   const [file, setFile] = useState(null);
@@ -168,11 +169,17 @@ export default function ScannerPage() {
           {scanResult && (
             <div className="scan-result">
               <h4>Scan Result:</h4>
-              <p><strong>Bill Date:</strong> {scanResult.billDate}</p>
-              <p><strong>Invoice No:</strong> {scanResult.invoiceNo}</p>
+              <p><strong>Invoice Date:</strong> {scanResult.invoiceDate}</p>
+              <p><strong>Invoice Number:</strong> {scanResult.invoiceNumber}</p>
               <p><strong>Total Amount:</strong> {scanResult.totalAmount}</p>
+              <p><strong>Classification:</strong> {scanResult.classification}</p>
             </div>
           )}
+          <div className="d-grid gap-2 mt-3">
+            <Link to="/history" className="btn btn-info">
+              View History
+            </Link>
+          </div>
         </div>
       </form>
     </div>
