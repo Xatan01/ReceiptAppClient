@@ -1,6 +1,5 @@
   import React from 'react';
   import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-  import LoginPage from './Pages/loginPage';
   import ScannerPage from './Pages/scannerPage';
   import 'bootstrap/dist/css/bootstrap.min.css';
 import HistoryPage from './Pages/historyPage';
