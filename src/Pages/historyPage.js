@@ -104,11 +104,23 @@ export default function HistoryPage() {
                                 </div>
                             </div>
                             <p><strong>File Name:</strong> {scan.fileName}</p>
-                            <p><strong>Invoice Date:</strong> {scan.invoiceDate}</p>
-                            <p><strong>Invoice Number:</strong> {scan.invoiceNumber}</p>
-                            <p><strong>Total Amount:</strong> {scan.totalAmount}</p>
-                            <p><strong>Classification:</strong> {scan.classification}</p>
                             <p><strong>Date:</strong> {new Date(scan.createdAt).toLocaleString()}</p>
+                            <div className="scan-results">
+                                <div>
+                                    <h4>Textract Results:</h4>
+                                    <p><strong>Invoice Date:</strong> {scan.textractResult.invoiceDate}</p>
+                                    <p><strong>Invoice Number:</strong> {scan.textractResult.invoiceNumber}</p>
+                                    <p><strong>Total Amount:</strong> {scan.textractResult.totalAmount}</p>
+                                    <p><strong>Classification:</strong> {scan.textractResult.classification}</p>
+                                </div>
+                                <div>
+                                    <h4>OpenAI Results:</h4>
+                                    <p><strong>Invoice Date:</strong> {scan.openaiResult.invoiceDate}</p>
+                                    <p><strong>Invoice Number:</strong> {scan.openaiResult.invoiceNumber}</p>
+                                    <p><strong>Total Amount:</strong> {scan.openaiResult.totalAmount}</p>
+                                    <p><strong>Classification:</strong> {scan.openaiResult.classification}</p>
+                                </div>
+                            </div>
                         </div>
                         <img src={scan.s3Url} alt={scan.fileName} className="scan-image" />
                     </li>
