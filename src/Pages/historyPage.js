@@ -12,7 +12,6 @@ export default function HistoryPage() {
             try {
                 const response = await fetch('http://localhost:5000/api/history');
                 const data = await response.json();
-                // Sort the data by createdAt in descending order
                 const sortedData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 console.log(sortedData); // Log the data to check the s3Url
                 setScanHistory(sortedData);

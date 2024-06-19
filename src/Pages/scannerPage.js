@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import "./scannerPage.css";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function ScannerPage() {
   const [file, setFile] = useState(null);
@@ -8,7 +8,8 @@ export default function ScannerPage() {
   const [stream, setStream] = useState(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isImageCaptured, setIsImageCaptured] = useState(false);
-  const [scanResult, setScanResult] = useState(null);
+  const [textractResult, setTextractResult] = useState(null);
+  const [openaiResult, setOpenaiResult] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const videoRef = useRef(null);
 
@@ -24,6 +25,8 @@ export default function ScannerPage() {
   const handleScan = async () => {
     setIsScanning(true);
     setErrorMessage(null);
+    setTextractResult(null); // Reset previous results
+    setOpenaiResult(null); // Reset previous results
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -31,9 +34,18 @@ export default function ScannerPage() {
         method: "POST",
         body: formData,
       });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
       const result = await response.json();
-      setScanResult(result.fields);
-      console.log("Scan result:", result);
+      if (result && result.textractResult && result.openaiResult) {
+        setTextractResult(result.textractResult);
+        setOpenaiResult(result.openaiResult);
+      } else {
+        setErrorMessage("Invalid response from server");
+      }
     } catch (error) {
       console.error("Error scanning file:", error);
       setErrorMessage("Failed to scan file. Please try again.");
@@ -166,13 +178,19 @@ export default function ScannerPage() {
               </div>
             </div>
           )}
-          {scanResult && (
-            <div className="scan-result">
-              <h4>Scan Result:</h4>
-              <p><strong>Invoice Date:</strong> {scanResult.invoiceDate}</p>
-              <p><strong>Invoice Number:</strong> {scanResult.invoiceNumber}</p>
-              <p><strong>Total Amount:</strong> {scanResult.totalAmount}</p>
-              <p><strong>Classification:</strong> {scanResult.classification}</p>
+          {textractResult && openaiResult && (
+            <div className="scan-result mt-3">
+              <h4>Textract Scan Result:</h4>
+              <p><strong>Invoice Date:</strong> {textractResult.invoiceDate}</p>
+              <p><strong>Invoice Number:</strong> {textractResult.invoiceNumber}</p>
+              <p><strong>Total Amount:</strong> {textractResult.totalAmount}</p>
+              <p><strong>Classification:</strong> {textractResult.classification}</p>
+              
+              <h4>OpenAI Extraction Result:</h4>
+              <p><strong>Invoice Date:</strong> {openaiResult.invoiceDate}</p>
+              <p><strong>Invoice Number:</strong> {openaiResult.invoiceNumber}</p>
+              <p><strong>Total Amount:</strong> {openaiResult.totalAmount}</p>
+              <p><strong>Classification:</strong> {openaiResult.classification}</p>
             </div>
           )}
           <div className="d-grid gap-2 mt-3">
