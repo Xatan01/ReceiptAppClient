@@ -10,6 +10,17 @@
     margin-bottom: 20px;
 }
 
+.history-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.right-buttons {
+    display: flex;
+    gap: 10px;
+}
+
 .history-list {
     list-style-type: none;
     padding: 0;

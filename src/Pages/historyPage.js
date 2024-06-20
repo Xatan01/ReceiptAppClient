@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './historyPage.css';
 
 export default function HistoryPage() {
@@ -6,6 +7,7 @@ export default function HistoryPage() {
     const [selectedItems, setSelectedItems] = useState(new Set());
     const [selectAll, setSelectAll] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchHistory = async () => {
@@ -48,9 +50,9 @@ export default function HistoryPage() {
     const handleClearSelected = async () => {
         const itemsToDelete = Array.from(selectedItems).map(id => {
             const item = scanHistory.find(scan => scan.id === id);
-            return { id: item.id, createdAt: item.createdAt }; // Send both id and createdAt
+            return { id: item.id, createdAt: item.createdAt, s3Key: item.s3Key }; // Include s3Key
         });
-    
+        
         try {
             const response = await fetch('http://localhost:5000/api/deleteSelected', {
                 method: 'POST',
@@ -72,19 +74,24 @@ export default function HistoryPage() {
             console.error("Error deleting selected scans:", error);
             setErrorMessage("Failed to delete selected scans. Please try again.");
         }
-    };    
+    };
 
     return (
         <div className="history-container">
             <h3 className="history-title">Scan History</h3>
             {errorMessage && <div className="error-message">{errorMessage}</div>}
             <div className="history-controls">
-                <button onClick={handleSelectAll}>
-                    {selectAll ? 'Deselect All' : 'Select All'}
+                <button onClick={() => navigate('/scanner')} className="btn btn-danger">
+                    Back
                 </button>
-                <button onClick={handleClearSelected} disabled={selectedItems.size === 0}>
-                    Clear Selected
-                </button>
+                <div className="right-buttons">
+                    <button onClick={handleSelectAll}>
+                        {selectAll ? 'Deselect All' : 'Select All'}
+                    </button>
+                    <button onClick={handleClearSelected} disabled={selectedItems.size === 0}>
+                        Clear Selected
+                    </button>
+                </div>
             </div>
             <ul className="history-list">
                 {scanHistory.map((scan) => (
