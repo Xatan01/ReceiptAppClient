@@ -48,9 +48,9 @@ export default function HistoryPage() {
     const handleClearSelected = async () => {
         const itemsToDelete = Array.from(selectedItems).map(id => {
             const item = scanHistory.find(scan => scan.id === id);
-            return { id: item.id, createdAt: item.createdAt };
+            return { id: item.id, createdAt: item.createdAt }; // Send both id and createdAt
         });
-
+    
         try {
             const response = await fetch('http://localhost:5000/api/deleteSelected', {
                 method: 'POST',
@@ -59,7 +59,7 @@ export default function HistoryPage() {
                 },
                 body: JSON.stringify({ items: itemsToDelete })
             });
-
+    
             if (response.ok) {
                 setScanHistory(prev => prev.filter(scan => !selectedItems.has(scan.id)));
                 setSelectedItems(new Set());
@@ -72,7 +72,7 @@ export default function HistoryPage() {
             console.error("Error deleting selected scans:", error);
             setErrorMessage("Failed to delete selected scans. Please try again.");
         }
-    };
+    };    
 
     return (
         <div className="history-container">
