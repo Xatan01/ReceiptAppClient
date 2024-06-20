@@ -34,12 +34,16 @@ export default function ScannerPage() {
         method: "POST",
         body: formData,
       });
-
+  
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
-
+  
       const result = await response.json();
+      
+      // Log the result to check the structure and values
+      console.log("Scan result:", result);
+  
       if (result && result.textractResult && result.openaiResult) {
         setTextractResult(result.textractResult);
         setOpenaiResult(result.openaiResult);
@@ -53,6 +57,7 @@ export default function ScannerPage() {
       setIsScanning(false);
     }
   };
+  
 
   const openCamera = async () => {
     setErrorMessage(null);
@@ -179,20 +184,21 @@ export default function ScannerPage() {
             </div>
           )}
           {textractResult && openaiResult && (
-            <div className="scan-result mt-3">
-              <h4>Textract Scan Result:</h4>
-              <p><strong>Invoice Date:</strong> {textractResult.invoiceDate}</p>
-              <p><strong>Invoice Number:</strong> {textractResult.invoiceNumber}</p>
-              <p><strong>Total Amount:</strong> {textractResult.totalAmount}</p>
-              <p><strong>Classification:</strong> {textractResult.classification}</p>
-              
-              <h4>OpenAI Extraction Result:</h4>
-              <p><strong>Invoice Date:</strong> {openaiResult.invoiceDate}</p>
-              <p><strong>Invoice Number:</strong> {openaiResult.invoiceNumber}</p>
-              <p><strong>Total Amount:</strong> {openaiResult.totalAmount}</p>
-              <p><strong>Classification:</strong> {openaiResult.classification}</p>
-            </div>
-          )}
+  <div className="scan-result mt-3">
+    <h4>Textract Scan Result:</h4>
+    <p><strong>Invoice Date:</strong> {textractResult.invoiceDate}</p>
+    <p><strong>Invoice Number:</strong> {textractResult.invoiceNumber}</p>
+    <p><strong>Total Amount:</strong> {textractResult.totalAmount}</p>
+    <p><strong>Classification:</strong> {textractResult.classification}</p>
+    
+    <h4>OpenAI Extraction Result:</h4>
+    <p><strong>Invoice Date:</strong> {openaiResult["Invoice Date"]}</p>
+    <p><strong>Invoice Number:</strong> {openaiResult["Invoice Number"]}</p>
+    <p><strong>Total Amount:</strong> {openaiResult["Total Amount"]}</p>
+    <p><strong>Classification:</strong> {openaiResult["Classification"]}</p>
+  </div>
+)}
+
           <div className="d-grid gap-2 mt-3">
             <Link to="/history" className="btn btn-info">
               View History
