@@ -184,21 +184,20 @@ export default function ScannerPage() {
             </div>
           )}
           {textractResult && openaiResult && (
-  <div className="scan-result mt-3">
-    <h4>Textract Scan Result:</h4>
-    <p><strong>Invoice Date:</strong> {textractResult.invoiceDate}</p>
-    <p><strong>Invoice Number:</strong> {textractResult.invoiceNumber}</p>
-    <p><strong>Total Amount:</strong> {textractResult.totalAmount}</p>
-    <p><strong>Classification:</strong> {textractResult.classification}</p>
+            <div className="scan-result mt-3">
+              <h4>Textract Scan Result:</h4>
+              <p><strong>Invoice Date:</strong> {textractResult.invoiceDate}</p>
+              <p><strong>Invoice Number:</strong> {textractResult.invoiceNumber}</p>
+              <p><strong>Total Amount:</strong> {textractResult.totalAmount}</p>
+              <p><strong>Classification:</strong> {textractResult.classification}</p>
     
-    <h4>OpenAI Extraction Result:</h4>
-    <p><strong>Invoice Date:</strong> {openaiResult["Invoice Date"]}</p>
-    <p><strong>Invoice Number:</strong> {openaiResult["Invoice Number"]}</p>
-    <p><strong>Total Amount:</strong> {openaiResult["Total Amount"]}</p>
-    <p><strong>Classification:</strong> {openaiResult["Classification"]}</p>
-  </div>
+              <h4>OpenAI Extraction Result:</h4>
+              <p><strong>Invoice Date:</strong> {openaiResult["Invoice Date"]}</p>
+              <p><strong>Invoice Number:</strong> {openaiResult["Invoice Number"]}</p>
+              <p><strong>Total Amount:</strong> {openaiResult["Total Amount"]}</p>
+              <p><strong>Classification:</strong> {openaiResult["Classification"]}</p>
+            </div>
 )}
-
           <div className="d-grid gap-2 mt-3">
             <Link to="/history" className="btn btn-info">
               View History

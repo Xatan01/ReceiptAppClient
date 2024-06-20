@@ -12,8 +12,8 @@ export default function HistoryPage() {
             try {
                 const response = await fetch('http://localhost:5000/api/history');
                 const data = await response.json();
+                console.log(data); // Log the data to check if openaiResult is included
                 const sortedData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                console.log(sortedData); // Log the data to check the s3Url
                 setScanHistory(sortedData);
             } catch (error) {
                 console.error("Error fetching scan history:", error);
@@ -107,17 +107,17 @@ export default function HistoryPage() {
                             <div className="scan-results">
                                 <div>
                                     <h4>Textract Results:</h4>
-                                    <p><strong>Invoice Date:</strong> {scan.textractResult.invoiceDate}</p>
-                                    <p><strong>Invoice Number:</strong> {scan.textractResult.invoiceNumber}</p>
-                                    <p><strong>Total Amount:</strong> {scan.textractResult.totalAmount}</p>
-                                    <p><strong>Classification:</strong> {scan.textractResult.classification}</p>
+                                    <p><strong>Invoice Date:</strong> {scan.textractResult?.invoiceDate || 'N/A'}</p>
+                                    <p><strong>Invoice Number:</strong> {scan.textractResult?.invoiceNumber || 'N/A'}</p>
+                                    <p><strong>Total Amount:</strong> {scan.textractResult?.totalAmount || 'N/A'}</p>
+                                    <p><strong>Classification:</strong> {scan.textractResult?.classification || 'N/A'}</p>
                                 </div>
                                 <div>
                                     <h4>OpenAI Results:</h4>
-                                    <p><strong>Invoice Date:</strong> {scan.openaiResult.invoiceDate}</p>
-                                    <p><strong>Invoice Number:</strong> {scan.openaiResult.invoiceNumber}</p>
-                                    <p><strong>Total Amount:</strong> {scan.openaiResult.totalAmount}</p>
-                                    <p><strong>Classification:</strong> {scan.openaiResult.classification}</p>
+                                    <p><strong>Invoice Date:</strong> {scan.openaiResult?.['Invoice Date'] || 'N/A'}</p>
+                                    <p><strong>Invoice Number:</strong> {scan.openaiResult?.['Invoice Number'] || 'N/A'}</p>
+                                    <p><strong>Total Amount:</strong> {scan.openaiResult?.['Total Amount'] || 'N/A'}</p>
+                                    <p><strong>Classification:</strong> {scan.openaiResult?.['Classification'] || 'N/A'}</p>
                                 </div>
                             </div>
                         </div>
